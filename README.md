@@ -16,7 +16,7 @@ Cornell University &nbsp;·&nbsp; \*Joint senior authorship
 
 **TL;DR.** Masked diffusion models generate with deterministic unmasking rules, so their likelihood under the
 sampler actually used is computable *exactly*: replay generation, reveal the true tokens instead of sampled ones,
-and sum their log-probabilities. Measured this way, the MDM–AR scaling gap shrinks from 16× to 9× compute.
+and sum their log-probabilities. No retraining, any pretrained MDM.
 
 **Highlights**
 - **Perplexity:** the MDM–AR gap shrinks by up to 32% in-domain and 82% zero-shot.
