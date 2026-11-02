@@ -16,8 +16,8 @@ Cornell University &nbsp;·&nbsp; \*Joint senior authorship
 
 **TL;DR.** The ELBO used to evaluate masked diffusion models (MDMs) is only a bound, and it assumes positions
 are unmasked uniformly at random. In practice, frontier MDMs generate with deterministic unmasking rules (e.g.
-confidence). DUEL computes the *exact* likelihood of an MDM under such a rule. It is a plug-and-play algorithm
-that needs no additional training: replay generation, reveal the true tokens instead of sampled ones, and sum
+confidence). DUEL computes the *exact* likelihood under such a rule. It is a plug-and-play algorithm
+that needs no training: replay generation, reveal the true tokens instead of sampled ones, and sum
 their log-probabilities.
 
 **Highlights**
