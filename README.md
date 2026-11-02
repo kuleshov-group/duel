@@ -18,6 +18,13 @@ Cornell University &nbsp;·&nbsp; \*Joint senior authorship
 sampler actually used is computable *exactly*: replay generation, reveal the true tokens instead of sampled ones,
 and sum their log-probabilities. Measured this way, the MDM–AR scaling gap shrinks from 16× to 9× compute.
 
+**Highlights**
+- **Perplexity:** the MDM–AR gap shrinks by up to 32% in-domain and 82% zero-shot.
+- **Scaling laws:** the MDM–AR compute gap falls from 16× to 9×.
+- **Multiple choice:** DUEL improves LLaDA-8B accuracy on all six tasks, by up to 9.7 points.
+- **Sampler selection:** DUEL agrees with a gold-standard LLM judge on every decided comparison; generative
+  perplexity and MAUVE do not.
+
 > [!NOTE]
 > **Full code coming soon.** This repository is a minimal reference implementation of DUEL to get started
 > (`duel.py`, `rules.py`, and a LLaDA example). Experiments, scaling laws and evaluations will be released here.
@@ -44,7 +51,7 @@ competitive with AR models than the ELBO initially suggests.
 
 </details>
 
-## The two algorithms
+## How DUEL works
 
 Sampling and scoring are the same loop: same rule, same revealed sets, same forward passes. Only one line differs.
 
@@ -65,17 +72,28 @@ sample(denoiser, rule)                     log_likelihood(x, denoiser, rule)
 | [`rules.py`](rules.py) | Unmasking rules and `Block` for block decoding |
 | [`example.py`](example.py) | End-to-end demo with LLaDA-8B-Instruct |
 
-## Quickstart
+## Installation
 
 ```bash
 git clone https://github.com/kuleshov-group/duel.git && cd duel
-uv sync                                   # creates .venv from uv.lock (or: pip install torch transformers==4.49.0)
+uv sync                                   # creates .venv from uv.lock
+```
+
+Without uv: `pip install torch transformers==4.49.0`. The lock file pins PyTorch to the CUDA 12.8 wheels.
+
+## Quickstart
+
+### Command line
+
+```bash
 uv run example.py --rule threshold --mu 0.9 --block_size 32 --gen_len 128 --temperature 0.5
 ```
 
-Other flags: `--rule {l2r,confidence,margin,threshold,klass}`, `--k`, `--nu`, `--block_size 0` (no blocks).
+This samples from LLaDA-8B-Instruct for a batch of prompts, then computes the exact log-likelihood of the
+samples under the same sampler. Other flags: `--rule {l2r,confidence,margin,threshold,klass}`, `--k`, `--nu`,
+`--block_size 0` (no blocks).
 
-In code:
+### Python API
 
 ```python
 import torch
@@ -105,8 +123,8 @@ continuations, pad_id)`, which returns `x, attention_mask, gen_mask`.
 Notes:
 - Rules see the untempered `softmax(logits)`, so `mu=0.9` means the same at every temperature. `temperature`
   only sets the distribution tokens are drawn from and scored under. `log_likelihood` needs `temperature > 0`.
-- At `temperature=0`, `Block(Confidence(1), 32)` reproduces LLaDA's own `generate` (low-confidence remasking,
-  one token per step) token for token.
+- At `temperature=0`, `Block(Confidence(1), 32)` matches LLaDA's own `generate` (low-confidence remasking,
+  one token per step) token for token on the prompts we checked.
 
 ## Unmasking rules
 
@@ -124,21 +142,25 @@ $p^{(1)}, p^{(2)}$ are the largest and second-largest predicted probabilities at
 Adaptive rules fall back to the most confident position when nothing passes, so every step makes progress
 and the loop simply runs until nothing is masked.
 
-**Writing your own.** A rule is called as `reveal = rule(probs, masked)` with `probs: [B, L, V]` and
+### Writing your own rule
+
+A rule is called as `reveal = rule(probs, masked)` with `probs: [B, L, V]` and
 `masked, reveal: Bool[B, L]`. Subclass `rules.Rule` and make sure that
 
 - `reveal` is a subset of `masked`, with at least one position for every row that still has masks;
 - `reveal` is a deterministic function of `probs` and `masked` (stateful rules may also use earlier steps;
   clear that state in `reset()`). In particular, it must not depend on the sampled tokens.
 
-## Batches, prompts and padding
+## Batching and padding
 
 A batch is two left-padded tensors: `x: Long[B, L]`, where `mask_id` marks the positions to generate or score,
 and a boolean `attention_mask` that is `False` on padding. Prompts and padding are never masked, so rules
 never see them. Rows may finish at different steps, and `Block` tracks each row's own starting column.
 The attention mask is passed explicitly because LLaDA's pad token is also its end-of-text token.
 
-**Other models.** `duel.py` only needs a function from tokens to logits where position `l` predicts token `l`.
+### Other models
+
+`duel.py` only needs a function from tokens to logits where position `l` predicts token `l`.
 For a model other than LLaDA, write that wrapper (e.g. undo a one-position logit shift).
 
 ## Citation
