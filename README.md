@@ -27,7 +27,7 @@ and sum their log-probabilities. Measured this way, the MDM–AR scaling gap shr
 
 > [!NOTE]
 > **Full code coming soon.** This repository is a minimal reference implementation of DUEL to get started
-> (`src/duel.py`, `src/rules.py`, and a LLaDA example). Experiments, scaling laws and evaluations will be released here.
+> (`src/duel.py`, `src/rules.py`, and a LLaDA example).
 
 <details>
 <summary><b>Abstract</b></summary>
