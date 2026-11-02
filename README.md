@@ -21,14 +21,11 @@ that needs no training: replay generation, reveal the true tokens instead of sam
 their log-probabilities.
 
 **Highlights**
-- **Perplexity:** the perplexity gap between MDMs and autoregressive (AR) models shrinks by up to 32% in-domain
-  and 82% zero-shot; at 8B scale, DUEL lowers LLaDA's zero-shot perplexity by 5–8%.
-- **Scaling laws:** the reported 16× MDM–AR compute gap falls to 9× under DUEL, revealing more than ⅓ is an
-  evaluation artifact.
-- **Multiple choice:** scoring answers with DUEL instead of the ELBO improves LLaDA-8B accuracy on all six
-  tasks, by 4.2 points on average (left-to-right unmasking) and up to 9.7 points.
-- **Sampler selection:** DUEL agrees with a blinded LLM judge on all 14 decided comparisons, where generative
-  perplexity (8/14) and MAUVE (12/14) fall short.
+- **Perplexity:** the MDM–AR gap shrinks by up to 32% in-domain and 82% zero-shot.
+- **Scaling laws:** the MDM–AR compute gap falls from 16× to 9×.
+- **Multiple choice:** DUEL improves LLaDA-8B accuracy on all six tasks, by up to 9.7 points.
+- **Sampler selection:** DUEL agrees with an LLM judge on 14/14 comparisons; generative perplexity gets 8/14
+  and MAUVE 12/14.
 
 > [!NOTE]
 > **Full code coming soon.** This repository is a minimal reference implementation of DUEL to get started
