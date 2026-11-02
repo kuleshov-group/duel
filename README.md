@@ -27,7 +27,7 @@ and sum their log-probabilities. Measured this way, the MDM–AR scaling gap shr
 
 > [!NOTE]
 > **Full code coming soon.** This repository is a minimal reference implementation of DUEL to get started
-> (`duel.py`, `rules.py`, and a LLaDA example). Experiments, scaling laws and evaluations will be released here.
+> (`src/duel.py`, `src/rules.py`, and a LLaDA example). Experiments, scaling laws and evaluations will be released here.
 
 <details>
 <summary><b>Abstract</b></summary>
@@ -68,9 +68,9 @@ sample(denoiser, rule)                     log_likelihood(x, denoiser, rule)
 
 | File | Contents |
 |---|---|
-| [`duel.py`](duel.py) | `sample` (Algorithm 1), `log_likelihood` (Algorithm 2), batching helpers |
-| [`rules.py`](rules.py) | Unmasking rules and `Block` for block decoding |
-| [`example.py`](example.py) | End-to-end demo with LLaDA-8B-Instruct |
+| [`src/duel.py`](src/duel.py) | `sample` (Algorithm 1), `log_likelihood` (Algorithm 2), batching helpers |
+| [`src/rules.py`](src/rules.py) | Unmasking rules and `Block` for block decoding |
+| [`src/example.py`](src/example.py) | End-to-end demo with LLaDA-8B-Instruct |
 
 ## Installation
 
@@ -86,7 +86,7 @@ Without uv: `pip install torch transformers==4.49.0`. The lock file pins PyTorch
 ### Command line
 
 ```bash
-uv run example.py --rule threshold --mu 0.9 --block_size 32 --gen_len 128 --temperature 0.5
+uv run src/example.py --rule threshold --mu 0.9 --block_size 32 --gen_len 128 --temperature 0.5
 ```
 
 This samples from LLaDA-8B-Instruct for a batch of prompts, then computes the exact log-likelihood of the
@@ -94,6 +94,8 @@ samples under the same sampler. Other flags: `--rule {l2r,confidence,margin,thre
 `--block_size 0` (no blocks).
 
 ### Python API
+
+Run from `src/`, or put it on the path with `PYTHONPATH=src`:
 
 ```python
 import torch

@@ -1,7 +1,7 @@
 """Sample from LLaDA-8B-Instruct with a deterministic unmasking rule, then compute the exact
 log-likelihood of those samples under the same sampler.
 
-    uv run example.py --rule threshold --mu 0.9 --block_size 32 --gen_len 128 --temperature 0.5
+    uv run src/example.py --rule threshold --mu 0.9 --block_size 32 --gen_len 128 --temperature 0.5
 """
 
 import argparse
